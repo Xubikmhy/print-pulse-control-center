@@ -66,16 +66,16 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   return (
     <aside 
       className={cn(
-        "fixed inset-y-0 left-0 z-10 flex flex-col shadow-apple-lg transition-all duration-300 bg-white dark:bg-app-gray-900 border-r border-app-gray-200 dark:border-app-gray-800",
-        open ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:translate-x-0 lg:w-20"
+        "fixed inset-y-0 left-0 z-20 flex flex-col shadow-apple-lg transition-all duration-300 bg-white dark:bg-app-gray-900 border-r border-app-gray-200 dark:border-app-gray-800",
+        open ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:translate-x-0 lg:w-16"
       )}
     >
       {/* Close button for mobile */}
       <button 
-        className="lg:hidden absolute right-4 top-4 text-app-gray-500 hover:text-app-gray-700 dark:text-app-gray-400 dark:hover:text-white"
+        className="lg:hidden absolute right-3 top-3 text-app-gray-500 hover:text-app-gray-700 dark:text-app-gray-400 dark:hover:text-white"
         onClick={() => setOpen(false)}
       >
-        <X className="h-6 w-6" />
+        <X className="h-5 w-5" />
       </button>
       
       {/* Company logo/name */}
@@ -100,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
       </div>
       
       {/* Menu items */}
-      <nav className="flex-1 px-2 py-4 space-y-1">
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           
@@ -129,11 +129,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
         })}
       </nav>
       
-      {/* Bottom section */}
+      {/* Bottom section with theme toggle */}
       <div className="p-4 flex items-center justify-center">
         <button
           onClick={toggleTheme}
           className="p-2 rounded-full hover:bg-app-gray-100 dark:hover:bg-app-gray-800 transition-colors"
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
         >
           {theme === 'dark' ? (
             <Sun className="h-5 w-5 text-app-gray-700 dark:text-app-gray-300" />

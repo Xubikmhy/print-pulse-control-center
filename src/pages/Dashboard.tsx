@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useApp } from '@/lib/context/app-context';
-import { formatCurrency, formatDate, timeAgo } from '@/lib/utils';
+import { formatDate, timeAgo } from '@/lib/utils';
 import { 
   Users, 
   Clock, 
@@ -92,8 +92,8 @@ const Dashboard: React.FC = () => {
     .slice(0, 3);
   
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <h1 className="text-2xl md:text-3xl font-bold text-app-gray-900 dark:text-white">
           Dashboard
         </h1>
@@ -101,14 +101,14 @@ const Dashboard: React.FC = () => {
         <div className="flex gap-2">
           <Link 
             to="/employees/new" 
-            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-app-blue text-white hover:bg-opacity-90 transition-colors text-sm"
+            className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-app-blue text-white hover:bg-opacity-90 transition-colors text-sm flex-1 sm:flex-auto"
           >
             <Plus className="h-4 w-4" />
             <span>New Employee</span>
           </Link>
           <Link 
             to="/tasks/new" 
-            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-app-green text-white hover:bg-opacity-90 transition-colors text-sm"
+            className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-app-green text-white hover:bg-opacity-90 transition-colors text-sm flex-1 sm:flex-auto"
           >
             <Plus className="h-4 w-4" />
             <span>New Task</span>
@@ -117,7 +117,7 @@ const Dashboard: React.FC = () => {
       </div>
       
       {/* Stats cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <DashboardCard 
           title="Total Employees" 
           value={dashboardSummary.totalEmployees} 
@@ -148,7 +148,7 @@ const Dashboard: React.FC = () => {
       </div>
       
       {/* Main content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Upcoming deadlines */}
         <div className="bg-white dark:bg-app-gray-800 rounded-xl shadow-apple-sm p-4 lg:col-span-2">
           <div className="flex justify-between items-center mb-4">
@@ -173,16 +173,16 @@ const Dashboard: React.FC = () => {
                     key={task.id} 
                     className="border border-app-gray-200 dark:border-app-gray-700 rounded-lg p-3 hover:bg-app-gray-50 dark:hover:bg-app-gray-800 transition-colors"
                   >
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                       <div>
                         <h3 className="font-medium text-app-gray-900 dark:text-white">
                           {task.title}
                         </h3>
                         <p className="text-sm text-app-gray-500 dark:text-app-gray-400">
-                          Assigned to: {employee?.name || 'Unknown'}
+                          Assigned to: {employee?.name || 'Unassigned'}
                         </p>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <div className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-app-orange bg-opacity-20 text-app-orange">
                           Due: {formatDate(task.dueDate)}
                         </div>
@@ -235,7 +235,7 @@ const Dashboard: React.FC = () => {
           </Link>
         </div>
         
-        <div className="h-60 flex items-center justify-center">
+        <div className="h-48 sm:h-60 flex items-center justify-center">
           <p className="text-app-gray-500 dark:text-app-gray-400">
             Chart will be displayed here
           </p>

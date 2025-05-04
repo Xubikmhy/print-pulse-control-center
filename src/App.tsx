@@ -9,7 +9,17 @@ import Layout from "./components/layout/layout";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Configure for offline only - disabling retries and caching aggressively
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+      cacheTime: Infinity
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
