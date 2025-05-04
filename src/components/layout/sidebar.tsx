@@ -37,30 +37,20 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
       icon: <Users className="h-5 w-5" /> 
     },
     { 
-      name: 'Daily Logs', 
-      path: '/logs', 
-      icon: <Calendar className="h-5 w-5" /> 
-    },
-    { 
       name: 'Tasks', 
       path: '/tasks', 
       icon: <CheckSquare className="h-5 w-5" /> 
     },
     { 
-      name: 'Salary', 
-      path: '/salary', 
+      name: 'Attendance', 
+      path: '/attendance', 
+      icon: <Calendar className="h-5 w-5" /> 
+    },
+    { 
+      name: 'Finances', 
+      path: '/finances', 
       icon: <DollarSign className="h-5 w-5" /> 
-    },
-    { 
-      name: 'Reports', 
-      path: '/reports', 
-      icon: <BarChart className="h-5 w-5" /> 
-    },
-    { 
-      name: 'Settings', 
-      path: '/settings', 
-      icon: <Settings className="h-5 w-5" /> 
-    },
+    }
   ];
   
   const isPathActive = (path: string) => {
