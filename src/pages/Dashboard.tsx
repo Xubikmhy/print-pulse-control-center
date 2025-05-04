@@ -10,7 +10,9 @@ import {
   ArrowRight,
   TrendingUp,
   ListPlus,
-  UserPlus
+  UserPlus,
+  UserCheck,
+  DollarSign
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -100,7 +102,7 @@ const Dashboard: React.FC = () => {
           Dashboard
         </h1>
         
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             asChild
             className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-app-blue text-white hover:bg-opacity-90 transition-colors text-sm flex-1 sm:flex-auto"
@@ -117,6 +119,15 @@ const Dashboard: React.FC = () => {
             <Link to="/tasks/new">
               <ListPlus className="h-4 w-4" />
               <span>New Task</span>
+            </Link>
+          </Button>
+          <Button
+            asChild
+            className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-app-orange text-white hover:bg-opacity-90 transition-colors text-sm flex-1 sm:flex-auto"
+          >
+            <Link to="/attendance">
+              <UserCheck className="h-4 w-4" />
+              <span>Attendance</span>
             </Link>
           </Button>
         </div>
@@ -151,6 +162,46 @@ const Dashboard: React.FC = () => {
           color="bg-app-red"
           trend={-8}
         />
+      </div>
+      
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <Link to="/finances" className="flex items-center gap-3 bg-white dark:bg-app-gray-800 rounded-xl p-4 shadow-apple-sm hover:bg-gray-50 dark:hover:bg-app-gray-700 transition-colors">
+          <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded-lg">
+            <DollarSign className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+          </div>
+          <div>
+            <h3 className="font-medium">Finances</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Manage advances & deductions</p>
+          </div>
+        </Link>
+        <Link to="/attendance" className="flex items-center gap-3 bg-white dark:bg-app-gray-800 rounded-xl p-4 shadow-apple-sm hover:bg-gray-50 dark:hover:bg-app-gray-700 transition-colors">
+          <div className="bg-green-100 dark:bg-green-900 p-3 rounded-lg">
+            <UserCheck className="h-5 w-5 text-green-600 dark:text-green-300" />
+          </div>
+          <div>
+            <h3 className="font-medium">Attendance</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Mark & track attendance</p>
+          </div>
+        </Link>
+        <Link to="/employees" className="flex items-center gap-3 bg-white dark:bg-app-gray-800 rounded-xl p-4 shadow-apple-sm hover:bg-gray-50 dark:hover:bg-app-gray-700 transition-colors">
+          <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
+            <Users className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+          </div>
+          <div>
+            <h3 className="font-medium">Employees</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">View & manage employees</p>
+          </div>
+        </Link>
+        <Link to="/tasks" className="flex items-center gap-3 bg-white dark:bg-app-gray-800 rounded-xl p-4 shadow-apple-sm hover:bg-gray-50 dark:hover:bg-app-gray-700 transition-colors">
+          <div className="bg-orange-100 dark:bg-orange-900 p-3 rounded-lg">
+            <ListPlus className="h-5 w-5 text-orange-600 dark:text-orange-300" />
+          </div>
+          <div>
+            <h3 className="font-medium">Tasks</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Assign & track tasks</p>
+          </div>
+        </Link>
       </div>
       
       {/* Main content */}
@@ -234,10 +285,10 @@ const Dashboard: React.FC = () => {
             Hours Worked This Week
           </h2>
           <Link 
-            to="/reports" 
+            to="/attendance" 
             className="text-app-blue dark:text-app-blue hover:underline text-sm flex items-center"
           >
-            Detailed Reports <ArrowRight className="ml-1 h-3.5 w-3.5" />
+            View Attendance <ArrowRight className="ml-1 h-3.5 w-3.5" />
           </Link>
         </div>
         

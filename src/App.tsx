@@ -11,6 +11,8 @@ import Employees from "./pages/Employees";
 import AddEmployee from "./pages/AddEmployee";
 import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
+import Attendance from "./pages/Attendance";
+import Finances from "./pages/Finances";
 import NotFound from "./pages/NotFound";
 
 // Configure for offline only - disabling retries and caching aggressively
@@ -38,7 +40,8 @@ const App = () => (
             <Route path="/employees/new" element={<Layout><AddEmployee /></Layout>} />
             <Route path="/tasks" element={<Layout><Tasks /></Layout>} />
             <Route path="/tasks/new" element={<Layout><AddTask /></Layout>} />
-            {/* Add other routes here */}
+            <Route path="/attendance" element={<Layout><Attendance /></Layout>} />
+            <Route path="/finances" element={<Layout><Finances /></Layout>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -58,6 +58,25 @@ export interface Advance {
   isPaid: boolean;
 }
 
+export interface Attendance {
+  id: string;
+  employeeId: string;
+  date: string; // ISO string
+  checkIn: string; // ISO string
+  checkOut: string | null; // ISO string or null if not checked out
+  status: 'Present' | 'Absent' | 'Half-day' | 'Late';
+  notes: string;
+}
+
+export interface SalaryDeduction {
+  id: string;
+  employeeId: string;
+  amount: number;
+  date: string; // ISO string
+  reason: string;
+  advanceId?: string; // Link to advance if deduction is for advance payment
+}
+
 export interface CompanyInfo {
   name: string;
   address: string;

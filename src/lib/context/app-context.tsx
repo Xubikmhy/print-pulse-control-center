@@ -1,6 +1,9 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { CompanyInfo, Employee, Task, WorkLog, Advance, DashboardSummary } from '../types';
+import { 
+  CompanyInfo, Employee, Task, WorkLog, Advance, 
+  DashboardSummary, Attendance, SalaryDeduction 
+} from '../types';
 import { generateId, isToday } from '../utils';
 import { mockEmployees, mockTasks, mockLogs, mockAdvances, mockCompanyInfo } from '../mock-data';
 
@@ -11,6 +14,8 @@ interface AppContextType {
   tasks: Task[];
   logs: WorkLog[];
   advances: Advance[];
+  attendance: Attendance[];
+  deductions: SalaryDeduction[];
   companyInfo: CompanyInfo;
   dashboardSummary: DashboardSummary;
   
@@ -35,7 +40,19 @@ interface AppContextType {
   updateAdvance: (id: string, advance: Partial<Advance>) => void;
   deleteAdvance: (id: string) => void;
   
+  // New functions for attendance and deductions
+  addAttendance: (attendance: Omit<Attendance, 'id'>) => void;
+  updateAttendance: (id: string, attendance: Partial<Attendance>) => void;
+  deleteAttendance: (id: string) => void;
+  
+  addDeduction: (deduction: Omit<SalaryDeduction, 'id'>) => void;
+  updateDeduction: (id: string, deduction: Partial<SalaryDeduction>) => void;
+  deleteDeduction: (id: string) => void;
+  
   updateCompanyInfo: (info: Partial<CompanyInfo>) => void;
+  
+  // Calculate remaining salary after deductions
+  calculateRemainingBalance: (employeeId: string, month: number, year: number) => number;
   
   // Export/Import
   exportData: () => string;
@@ -52,6 +69,8 @@ const initialState = {
   tasks: [] as Task[],
   logs: [] as WorkLog[],
   advances: [] as Advance[],
+  attendance: [] as Attendance[],
+  deductions: [] as SalaryDeduction[],
   companyInfo: {
     name: 'My Printing Press',
     address: '123 Print Street, Inkville',
@@ -66,6 +85,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [logs, setLogs] = useState<WorkLog[]>([]);
   const [advances, setAdvances] = useState<Advance[]>([]);
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
+  const [deductions, setDeductions] = useState<SalaryDeduction[]>([]);
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(initialState.companyInfo);
 
   // Load data from localStorage on initial load
@@ -85,6 +106,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setTasks(parsedData.tasks || []);
       setLogs(parsedData.logs || []);
       setAdvances(parsedData.advances || []);
+      setAttendance(parsedData.attendance || []);
+      setDeductions(parsedData.deductions || []);
       setCompanyInfo(parsedData.companyInfo || initialState.companyInfo);
     } else {
       // Use mock data for first-time users
@@ -92,6 +115,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setTasks(mockTasks);
       setLogs(mockLogs);
       setAdvances(mockAdvances);
+      setAttendance([]);
+      setDeductions([]);
       setCompanyInfo(mockCompanyInfo);
       
       // Save mock data to localStorage
@@ -100,6 +125,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         tasks: mockTasks,
         logs: mockLogs,
         advances: mockAdvances,
+        attendance: [],
+        deductions: [],
         companyInfo: mockCompanyInfo
       });
     }
@@ -161,6 +188,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         message: `Advance of ${adv.amount} given to ${employees.find(e => e.id === adv.employeeId)?.name || 'Employee'}`,
         timestamp: adv.date,
         sortDate: new Date(adv.date)
+      })),
+      ...attendance.map(att => ({
+        type: 'log' as const,
+        message: `${employees.find(e => e.id === att.employeeId)?.name || 'Employee'} marked as ${att.status}`,
+        timestamp: att.date,
+        sortDate: new Date(att.date)
+      })),
+      ...deductions.map(ded => ({
+        type: 'advance' as const,
+        message: `Deduction of ${ded.amount} applied to ${employees.find(e => e.id === ded.employeeId)?.name || 'Employee'}`,
+        timestamp: ded.date,
+        sortDate: new Date(ded.date)
       }))
     ].sort((a, b) => b.sortDate.getTime() - a.sortDate.getTime())
     .slice(0, 5);
@@ -271,6 +310,96 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     saveToLocalStorage({ advances: updatedAdvances });
   };
   
+  // CRUD operations for attendance
+  const addAttendance = (attendanceData: Omit<Attendance, 'id'>) => {
+    const newAttendance = { ...attendanceData, id: generateId() };
+    const updatedAttendance = [...attendance, newAttendance];
+    setAttendance(updatedAttendance);
+    saveToLocalStorage({ attendance: updatedAttendance });
+  };
+  
+  const updateAttendance = (id: string, attendanceData: Partial<Attendance>) => {
+    const updatedAttendance = attendance.map(att => 
+      att.id === id ? { ...att, ...attendanceData } : att
+    );
+    setAttendance(updatedAttendance);
+    saveToLocalStorage({ attendance: updatedAttendance });
+  };
+  
+  const deleteAttendance = (id: string) => {
+    const updatedAttendance = attendance.filter(att => att.id !== id);
+    setAttendance(updatedAttendance);
+    saveToLocalStorage({ attendance: updatedAttendance });
+  };
+  
+  // CRUD operations for salary deductions
+  const addDeduction = (deduction: Omit<SalaryDeduction, 'id'>) => {
+    const newDeduction = { ...deduction, id: generateId() };
+    const updatedDeductions = [...deductions, newDeduction];
+    setDeductions(updatedDeductions);
+    saveToLocalStorage({ deductions: updatedDeductions });
+  };
+  
+  const updateDeduction = (id: string, deductionData: Partial<SalaryDeduction>) => {
+    const updatedDeductions = deductions.map(deduction => 
+      deduction.id === id ? { ...deduction, ...deductionData } : deduction
+    );
+    setDeductions(updatedDeductions);
+    saveToLocalStorage({ deductions: updatedDeductions });
+  };
+  
+  const deleteDeduction = (id: string) => {
+    const updatedDeductions = deductions.filter(deduction => deduction.id !== id);
+    setDeductions(updatedDeductions);
+    saveToLocalStorage({ deductions: updatedDeductions });
+  };
+
+  // Calculate remaining salary after deductions for an employee for a specific month/year
+  const calculateRemainingBalance = (employeeId: string, month: number, year: number) => {
+    const employee = employees.find(e => e.id === employeeId);
+    if (!employee) return 0;
+    
+    // Base salary calculation
+    let baseSalary = 0;
+    if (employee.salaryType === 'Monthly') {
+      baseSalary = employee.salaryRate;
+    } else {
+      // For hourly employees, calculate based on hours worked in the month
+      const monthLogs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return log.employeeId === employeeId && 
+               logDate.getMonth() === month && 
+               logDate.getFullYear() === year;
+      });
+      
+      const totalHours = monthLogs.reduce((sum, log) => sum + (log.hoursWorked || 0), 0);
+      baseSalary = totalHours * employee.salaryRate;
+    }
+    
+    // Calculate advances that are not paid yet
+    const monthAdvances = advances.filter(adv => {
+      const advDate = new Date(adv.date);
+      return adv.employeeId === employeeId && 
+             !adv.isPaid &&
+             advDate.getMonth() <= month && 
+             advDate.getFullYear() <= year;
+    });
+    
+    const totalAdvances = monthAdvances.reduce((sum, adv) => sum + adv.amount, 0);
+    
+    // Calculate other deductions for the month
+    const monthDeductions = deductions.filter(ded => {
+      const dedDate = new Date(ded.date);
+      return ded.employeeId === employeeId && 
+             dedDate.getMonth() === month && 
+             dedDate.getFullYear() === year;
+    });
+    
+    const totalDeductions = monthDeductions.reduce((sum, ded) => sum + ded.amount, 0);
+    
+    return baseSalary - totalAdvances - totalDeductions;
+  };
+  
   // Update company info
   const updateCompanyInfo = (info: Partial<CompanyInfo>) => {
     const updatedInfo = { ...companyInfo, ...info };
@@ -285,6 +414,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       tasks,
       logs,
       advances,
+      attendance,
+      deductions,
       companyInfo
     });
   };
@@ -297,6 +428,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (data.tasks) setTasks(data.tasks);
       if (data.logs) setLogs(data.logs);
       if (data.advances) setAdvances(data.advances);
+      if (data.attendance) setAttendance(data.attendance);
+      if (data.deductions) setDeductions(data.deductions);
       if (data.companyInfo) setCompanyInfo(data.companyInfo);
       
       saveToLocalStorage(data);
@@ -312,6 +445,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTasks([]);
     setLogs([]);
     setAdvances([]);
+    setAttendance([]);
+    setDeductions([]);
     setCompanyInfo(initialState.companyInfo);
     
     saveToLocalStorage({
@@ -319,6 +454,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       tasks: [],
       logs: [],
       advances: [],
+      attendance: [],
+      deductions: [],
       companyInfo: initialState.companyInfo
     });
   };
@@ -328,6 +465,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     tasks,
     logs,
     advances,
+    attendance,
+    deductions,
     companyInfo,
     dashboardSummary: calculateDashboardSummary(),
     
@@ -350,7 +489,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     updateAdvance,
     deleteAdvance,
     
+    addAttendance,
+    updateAttendance,
+    deleteAttendance,
+    
+    addDeduction,
+    updateDeduction,
+    deleteDeduction,
+    
     updateCompanyInfo,
+    calculateRemainingBalance,
     
     exportData,
     importData,
