@@ -14,7 +14,7 @@ import AddTask from "./pages/AddTask";
 import Attendance from "./pages/Attendance";
 import Finances from "./pages/Finances";
 import NotFound from "./pages/NotFound";
-import React from 'react';
+import * as React from 'react';
 
 // Configure for offline only - disabling retries and caching aggressively
 const queryClient = new QueryClient({
@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
       retry: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
-      gcTime: Infinity // Updated from cacheTime to gcTime
+      gcTime: Infinity
     },
   },
 });
