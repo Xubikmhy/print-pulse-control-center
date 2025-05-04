@@ -63,6 +63,13 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
     },
   ];
   
+  const isPathActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === path;
+    }
+    return location.pathname.startsWith(path);
+  };
+  
   return (
     <aside 
       className={cn(
@@ -102,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
       {/* Menu items */}
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = isPathActive(item.path);
           
           return (
             <Link
@@ -114,6 +121,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
                   ? "bg-app-blue text-white" 
                   : "text-app-gray-700 dark:text-app-gray-300 hover:bg-app-gray-100 dark:hover:bg-app-gray-800"
               )}
+              onClick={() => {
+                if (window.innerWidth < 1024) {
+                  setOpen(false);
+                }
+              }}
             >
               <div className="flex items-center justify-center">
                 {item.icon}

@@ -9,9 +9,11 @@ import {
   AlertCircle,
   ArrowRight,
   TrendingUp,
-  Plus
+  ListPlus,
+  UserPlus
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const DashboardCard: React.FC<{
   title: string;
@@ -99,20 +101,24 @@ const Dashboard: React.FC = () => {
         </h1>
         
         <div className="flex gap-2">
-          <Link 
-            to="/employees/new" 
+          <Button
+            asChild
             className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-app-blue text-white hover:bg-opacity-90 transition-colors text-sm flex-1 sm:flex-auto"
           >
-            <Plus className="h-4 w-4" />
-            <span>New Employee</span>
-          </Link>
-          <Link 
-            to="/tasks/new" 
+            <Link to="/employees/new">
+              <UserPlus className="h-4 w-4" />
+              <span>New Employee</span>
+            </Link>
+          </Button>
+          <Button
+            asChild
             className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-app-green text-white hover:bg-opacity-90 transition-colors text-sm flex-1 sm:flex-auto"
           >
-            <Plus className="h-4 w-4" />
-            <span>New Task</span>
-          </Link>
+            <Link to="/tasks/new">
+              <ListPlus className="h-4 w-4" />
+              <span>New Task</span>
+            </Link>
+          </Button>
         </div>
       </div>
       
