@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider } from "./lib/context/app-context";
 import Layout from "./components/layout/layout";
 import Dashboard from "./pages/Dashboard";
@@ -47,8 +47,9 @@ const App: React.FC = () => {
               <Route path="/attendance" element={<Layout><Attendance /></Layout>} />
               <Route path="/finances" element={<Layout><Finances /></Layout>} />
               <Route path="/salary-reports" element={<Layout><SalaryReports /></Layout>} />
-              <Route path="/settings" element={<Layout><Settings /></Layout>} />
               <Route path="/salary" element={<Layout><SalaryReports /></Layout>} />
+              <Route path="/settings" element={<Layout><Settings /></Layout>} />
+              {/* Catch all route - must be last */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
