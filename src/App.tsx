@@ -48,6 +48,7 @@ const App = () => {
               <Route path="/finances" element={<Layout><Finances /></Layout>} />
               <Route path="/salary-reports" element={<Layout><SalaryReports /></Layout>} />
               <Route path="/settings" element={<Layout><Settings /></Layout>} />
+              <Route path="/salary" element={<Layout><SalaryReports /></Layout>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
