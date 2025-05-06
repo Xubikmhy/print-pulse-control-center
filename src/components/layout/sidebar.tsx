@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '@/lib/context/app-context';
@@ -66,6 +65,9 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   const isPathActive = (path: string) => {
     if (path === '/') {
       return location.pathname === path;
+    }
+    if (path === '/salary-reports' && location.pathname === '/salary') {
+      return true;
     }
     return location.pathname.startsWith(path);
   };

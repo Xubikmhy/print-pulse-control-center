@@ -47,7 +47,7 @@ const App: React.FC = () => {
               <Route path="/attendance" element={<Layout><Attendance /></Layout>} />
               <Route path="/finances" element={<Layout><Finances /></Layout>} />
               <Route path="/salary-reports" element={<Layout><SalaryReports /></Layout>} />
-              <Route path="/salary" element={<Layout><SalaryReports /></Layout>} />
+              <Route path="/salary" element={<Navigate to="/salary-reports" replace />} />
               <Route path="/settings" element={<Layout><Settings /></Layout>} />
               {/* Catch all route - must be last */}
               <Route path="*" element={<NotFound />} />
