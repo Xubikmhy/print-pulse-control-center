@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useApp } from '@/lib/context/app-context';
 import { format } from 'date-fns';
@@ -97,7 +96,7 @@ const SalaryReports = () => {
                   return (
                     <TableRow key={employee.id}>
                       <TableCell className="font-medium">{employee.name}</TableCell>
-                      <TableCell>{employee.position}</TableCell>
+                      <TableCell>{employee.position || 'N/A'}</TableCell>
                       <TableCell>{employee.salaryType}</TableCell>
                       <TableCell>
                         ${employee.salaryRate.toFixed(2)}

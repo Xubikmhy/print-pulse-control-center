@@ -17,6 +17,7 @@ export interface Employee {
   id: string;
   name: string;
   department: Department;
+  position: string;  // Added position property
   phone: string;
   email: string;
   joiningDate: string; // ISO string
