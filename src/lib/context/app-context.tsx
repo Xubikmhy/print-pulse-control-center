@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   CompanyInfo, Employee, Task, WorkLog, Advance, 
-  DashboardSummary, Attendance, SalaryDeduction 
+  DashboardSummary, Attendance, SalaryDeduction, Department 
 } from '../types';
 import { generateId, isToday } from '../utils';
 import { mockEmployees, mockTasks, mockLogs, mockAdvances, mockCompanyInfo } from '../mock-data';
@@ -17,6 +17,7 @@ interface AppContextType {
   advances: Advance[];
   attendance: Attendance[];
   deductions: SalaryDeduction[];
+  departments: Department[];
   companyInfo: CompanyInfo;
   dashboardSummary: DashboardSummary;
   
@@ -50,7 +51,10 @@ interface AppContextType {
   updateDeduction: (id: string, deduction: Partial<SalaryDeduction>) => void;
   deleteDeduction: (id: string) => void;
   
-  updateCompanyInfo: (info: Partial<CompanyInfo>) => void;
+  // Department operations
+  addDepartment: (name: string, description: string) => void;
+  updateDepartment: (id: string, name: string, description: string) => void;
+  deleteDepartment: (id: string) => void;
   
   // Calculate remaining salary after deductions
   calculateRemainingBalance: (employeeId: string, month: number, year: number) => number;
@@ -72,6 +76,7 @@ const initialState = {
   advances: [] as Advance[],
   attendance: [] as Attendance[],
   deductions: [] as SalaryDeduction[],
+  departments: [] as Department[],
   companyInfo: {
     name: 'My Printing Press',
     address: '123 Print Street, Inkville',
@@ -91,6 +96,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [advances, setAdvances] = useState<Advance[]>([]);
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [deductions, setDeductions] = useState<SalaryDeduction[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(initialState.companyInfo);
 
   // Load data from localStorage on initial load
@@ -112,15 +118,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setAdvances(parsedData.advances || []);
       setAttendance(parsedData.attendance || []);
       setDeductions(parsedData.deductions || []);
+      setDepartments(parsedData.departments || []);
       setCompanyInfo(parsedData.companyInfo || initialState.companyInfo);
     } else {
       // Use mock data for first-time users
+      const defaultDepartments = [
+        { id: generateId(), name: 'Printing', description: 'Main printing operations' },
+        { id: generateId(), name: 'Design', description: 'Graphic design team' },
+        { id: generateId(), name: 'Binding', description: 'Book and document binding' },
+        { id: generateId(), name: 'Packaging', description: 'Product packaging' },
+        { id: generateId(), name: 'Management', description: 'Administration and management' },
+        { id: generateId(), name: 'Others', description: 'Miscellaneous departments' }
+      ];
+      
       setEmployees(mockEmployees);
       setTasks(mockTasks);
       setLogs(mockLogs);
       setAdvances(mockAdvances);
       setAttendance([]);
       setDeductions([]);
+      setDepartments(defaultDepartments);
       setCompanyInfo(mockCompanyInfo);
       
       // Save mock data to localStorage
@@ -131,6 +148,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         advances: mockAdvances,
         attendance: [],
         deductions: [],
+        departments: defaultDepartments,
         companyInfo: mockCompanyInfo
       });
     }
@@ -357,7 +375,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setDeductions(updatedDeductions);
     saveToLocalStorage({ deductions: updatedDeductions });
   };
-
+  
+  // Department operations
+  const addDepartment = (name: string, description: string) => {
+    const newDepartment = { 
+      id: generateId(),
+      name,
+      description
+    };
+    const updatedDepartments = [...departments, newDepartment];
+    setDepartments(updatedDepartments);
+    saveToLocalStorage({ departments: updatedDepartments });
+  };
+  
+  const updateDepartment = (id: string, name: string, description: string) => {
+    const updatedDepartments = departments.map(dept => 
+      dept.id === id ? { ...dept, name, description } : dept
+    );
+    setDepartments(updatedDepartments);
+    saveToLocalStorage({ departments: updatedDepartments });
+  };
+  
+  const deleteDepartment = (id: string) => {
+    // Check if department is in use by any employees
+    const isDepartmentInUse = employees.some(emp => 
+      emp.department === departments.find(d => d.id === id)?.name
+    );
+    
+    if (isDepartmentInUse) {
+      throw new Error('Cannot delete department that is in use by employees');
+    }
+    
+    const updatedDepartments = departments.filter(dept => dept.id !== id);
+    setDepartments(updatedDepartments);
+    saveToLocalStorage({ departments: updatedDepartments });
+  };
+  
   // Calculate remaining salary after deductions
   const calculateRemainingBalance = (employeeId: string, month: number, year: number) => {
     const employee = employees.find(e => e.id === employeeId);
@@ -420,6 +473,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       advances,
       attendance,
       deductions,
+      departments,
       companyInfo
     });
   };
@@ -434,6 +488,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (data.advances) setAdvances(data.advances);
       if (data.attendance) setAttendance(data.attendance);
       if (data.deductions) setDeductions(data.deductions);
+      if (data.departments) setDepartments(data.departments);
       if (data.companyInfo) setCompanyInfo(data.companyInfo);
       
       saveToLocalStorage(data);
@@ -451,6 +506,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAdvances([]);
     setAttendance([]);
     setDeductions([]);
+    setDepartments([]);
     setCompanyInfo(initialState.companyInfo);
     
     saveToLocalStorage({
@@ -460,6 +516,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       advances: [],
       attendance: [],
       deductions: [],
+      departments: [],
       companyInfo: initialState.companyInfo
     });
   };
@@ -471,6 +528,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     advances,
     attendance,
     deductions,
+    departments,
     companyInfo,
     dashboardSummary: calculateDashboardSummary(),
     
@@ -500,6 +558,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addDeduction,
     updateDeduction,
     deleteDeduction,
+    
+    addDepartment,
+    updateDepartment,
+    deleteDepartment,
     
     updateCompanyInfo,
     calculateRemainingBalance,

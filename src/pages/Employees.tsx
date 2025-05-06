@@ -9,7 +9,7 @@ import { Edit, Plus, Trash2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Employees = () => {
-  const { employees, deleteEmployee } = useApp();
+  const { employees, deleteEmployee, departments } = useApp();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [filter, setFilter] = React.useState('all'); // 'all' | 'active' | 'inactive'
@@ -22,7 +22,13 @@ const Employees = () => {
     return true;
   });
   
-  const departments = [...new Set(employees.map(e => e.department))];
+  // Get unique department names from actual departments or employees
+  const uniqueDepartments = React.useMemo(() => {
+    if (departments.length > 0) {
+      return departments.map(dept => dept.name);
+    }
+    return [...new Set(employees.map(e => e.department))];
+  }, [departments, employees]);
   
   const handleDelete = (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to deactivate ${name}?`)) {
@@ -81,7 +87,7 @@ const Employees = () => {
           onChange={(e) => setDepartmentFilter(e.target.value)}
         >
           <option value="all">All Departments</option>
-          {departments.map(dept => (
+          {uniqueDepartments.map(dept => (
             <option key={dept} value={dept}>{dept}</option>
           ))}
         </select>

@@ -8,10 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 
 const AddEmployee = () => {
   const navigate = useNavigate();
-  const { addEmployee } = useApp();
+  const { addEmployee, departments } = useApp();
   const { toast } = useToast();
   const [name, setName] = React.useState('');
-  const [department, setDepartment] = React.useState('Printing');
+  const [department, setDepartment] = React.useState('');
   const [position, setPosition] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -21,6 +21,13 @@ const AddEmployee = () => {
   const [employmentType, setEmploymentType] = React.useState('Full-time');
   const [salaryType, setSalaryType] = React.useState('Hourly');
   const [salaryRate, setSalaryRate] = React.useState(0);
+
+  React.useEffect(() => {
+    // Set default department if available
+    if (departments.length > 0 && !department) {
+      setDepartment(departments[0].name);
+    }
+  }, [departments, department]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +43,7 @@ const AddEmployee = () => {
 
     addEmployee({
       name,
-      department: department as any,
+      department,
       position,
       phone,
       email,
@@ -105,12 +112,22 @@ const AddEmployee = () => {
                   onChange={(e) => setDepartment(e.target.value)}
                   required
                 >
-                  <option value="Printing">Printing</option>
-                  <option value="Design">Design</option>
-                  <option value="Binding">Binding</option>
-                  <option value="Packaging">Packaging</option>
-                  <option value="Management">Management</option>
-                  <option value="Others">Others</option>
+                  {departments.length > 0 ? (
+                    departments.map(dept => (
+                      <option key={dept.id} value={dept.name}>
+                        {dept.name}
+                      </option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="Printing">Printing</option>
+                      <option value="Design">Design</option>
+                      <option value="Binding">Binding</option>
+                      <option value="Packaging">Packaging</option>
+                      <option value="Management">Management</option>
+                      <option value="Others">Others</option>
+                    </>
+                  )}
                 </select>
               </div>
 

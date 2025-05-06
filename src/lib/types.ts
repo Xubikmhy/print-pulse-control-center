@@ -1,7 +1,7 @@
 
 // Main data types for the application
 
-export type Department = 'Printing' | 'Design' | 'Binding' | 'Packaging' | 'Management' | 'Others';
+export type DepartmentType = 'Printing' | 'Design' | 'Binding' | 'Packaging' | 'Management' | 'Others';
 
 export type EmploymentType = 'Full-time' | 'Part-time' | 'Contractual';
 
@@ -13,11 +13,17 @@ export type TaskStatus = 'Completed' | 'In Progress' | 'Pending';
 
 export type LogStatus = 'Finished' | 'Pending';
 
+export interface Department {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export interface Employee {
   id: string;
   name: string;
-  department: Department;
-  position: string;  // Added position property
+  department: string;  // Changed from DepartmentType to string to allow custom departments
+  position: string;
   phone: string;
   email: string;
   joiningDate: string; // ISO string

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '@/lib/context/app-context';
@@ -12,7 +13,8 @@ import {
   Settings,
   X,
   Moon,
-  Sun
+  Sun,
+  Building
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -34,6 +36,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
       name: 'Employees', 
       path: '/employees', 
       icon: <Users className="h-5 w-5" /> 
+    },
+    {
+      name: 'Departments',
+      path: '/departments',
+      icon: <Building className="h-5 w-5" />
     },
     { 
       name: 'Tasks', 

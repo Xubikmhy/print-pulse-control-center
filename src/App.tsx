@@ -9,6 +9,7 @@ import { AppProvider } from "./lib/context/app-context";
 import Layout from "./components/layout/layout";
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
+import Departments from "./pages/Departments";
 import AddEmployee from "./pages/AddEmployee";
 import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
@@ -42,6 +43,7 @@ const App: React.FC = () => {
               <Route path="/" element={<Layout><Dashboard /></Layout>} />
               <Route path="/employees" element={<Layout><Employees /></Layout>} />
               <Route path="/employees/new" element={<Layout><AddEmployee /></Layout>} />
+              <Route path="/departments" element={<Layout><Departments /></Layout>} />
               <Route path="/tasks" element={<Layout><Tasks /></Layout>} />
               <Route path="/tasks/new" element={<Layout><AddTask /></Layout>} />
               <Route path="/attendance" element={<Layout><Attendance /></Layout>} />
