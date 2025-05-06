@@ -80,8 +80,11 @@ const initialState = {
 };
 
 // Provider component
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+  // Theme state
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  
+  // Data states
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [logs, setLogs] = useState<WorkLog[]>([]);
