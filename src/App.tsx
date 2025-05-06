@@ -13,6 +13,8 @@ import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
 import Attendance from "./pages/Attendance";
 import Finances from "./pages/Finances";
+import SalaryReports from "./pages/SalaryReports";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import * as React from 'react';
 
@@ -45,6 +47,8 @@ const App = () => {
                 <Route path="/tasks/new" element={<Layout><AddTask /></Layout>} />
                 <Route path="/attendance" element={<Layout><Attendance /></Layout>} />
                 <Route path="/finances" element={<Layout><Finances /></Layout>} />
+                <Route path="/salary-reports" element={<Layout><SalaryReports /></Layout>} />
+                <Route path="/settings" element={<Layout><Settings /></Layout>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

@@ -50,6 +50,16 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
       name: 'Finances', 
       path: '/finances', 
       icon: <DollarSign className="h-5 w-5" /> 
+    },
+    { 
+      name: 'Salary Reports', 
+      path: '/salary-reports', 
+      icon: <BarChart className="h-5 w-5" /> 
+    },
+    { 
+      name: 'Settings', 
+      path: '/settings', 
+      icon: <Settings className="h-5 w-5" /> 
     }
   ];
   
