@@ -22,6 +22,7 @@ export const mockEmployees: Employee[] = [
     id: generateId(),
     name: 'John Smith',
     department: 'Printing',
+    position: 'Senior Printer',
     phone: '555-1234',
     email: 'john@print.com',
     joiningDate: getDate(-180), // 6 months ago
@@ -34,6 +35,7 @@ export const mockEmployees: Employee[] = [
     id: generateId(),
     name: 'Emma Johnson',
     department: 'Design',
+    position: 'Graphic Designer',
     phone: '555-2345',
     email: 'emma@print.com',
     joiningDate: getDate(-90), // 3 months ago
@@ -46,6 +48,7 @@ export const mockEmployees: Employee[] = [
     id: generateId(),
     name: 'Michael Brown',
     department: 'Binding',
+    position: 'Binding Specialist',
     phone: '555-3456',
     email: 'michael@print.com',
     joiningDate: getDate(-45), // 1.5 months ago
@@ -58,6 +61,7 @@ export const mockEmployees: Employee[] = [
     id: generateId(),
     name: 'Sarah Miller',
     department: 'Packaging',
+    position: 'Packaging Associate',
     phone: '555-4567',
     email: 'sarah@print.com',
     joiningDate: getDate(-30), // 1 month ago
@@ -70,6 +74,7 @@ export const mockEmployees: Employee[] = [
     id: generateId(),
     name: 'David Wilson',
     department: 'Management',
+    position: 'Production Manager',
     phone: '555-5678',
     email: 'david@print.com',
     joiningDate: getDate(-200), // ~6.5 months ago
@@ -82,6 +87,7 @@ export const mockEmployees: Employee[] = [
     id: generateId(),
     name: 'James Williams',
     department: 'Printing',
+    position: 'Assistant Printer',
     phone: '555-6789',
     email: 'james@print.com',
     joiningDate: getDate(-150), // 5 months ago

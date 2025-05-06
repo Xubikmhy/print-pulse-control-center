@@ -13,6 +13,7 @@ const AddEmployee = () => {
   const { toast } = useToast();
   const [name, setName] = React.useState('');
   const [department, setDepartment] = React.useState('Printing');
+  const [position, setPosition] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [joiningDate, setJoiningDate] = React.useState(
@@ -37,6 +38,7 @@ const AddEmployee = () => {
     addEmployee({
       name,
       department: department as any,
+      position,
       phone,
       email,
       joiningDate,
@@ -111,6 +113,19 @@ const AddEmployee = () => {
                   <option value="Management">Management</option>
                   <option value="Others">Others</option>
                 </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="position" className="text-sm font-medium">
+                  Position
+                </label>
+                <input
+                  id="position"
+                  type="text"
+                  className="w-full p-2 border rounded-md dark:bg-app-gray-800 dark:border-app-gray-700"
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value)}
+                />
               </div>
 
               <div className="space-y-2">
