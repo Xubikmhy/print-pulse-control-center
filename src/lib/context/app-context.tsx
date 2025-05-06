@@ -80,7 +80,7 @@ const initialState = {
 };
 
 // Provider component
-export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Theme state
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   
@@ -223,7 +223,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   };
   
-  // CRUD operations for employees
+  // CRUD operations for employees, tasks, logs, advances, attendance and deductions
   const addEmployee = (employee: Omit<Employee, 'id'>) => {
     const newEmployee = { ...employee, id: generateId() };
     const updatedEmployees = [...employees, newEmployee];
@@ -358,7 +358,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     saveToLocalStorage({ deductions: updatedDeductions });
   };
 
-  // Calculate remaining salary after deductions for an employee for a specific month/year
+  // Calculate remaining salary after deductions
   const calculateRemainingBalance = (employeeId: string, month: number, year: number) => {
     const employee = employees.find(e => e.id === employeeId);
     if (!employee) return 0;
