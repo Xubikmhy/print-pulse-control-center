@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/lib/context/app-context';
@@ -117,7 +116,7 @@ const AddEmployee = () => {
 
               <div className="space-y-2">
                 <label htmlFor="position" className="text-sm font-medium">
-                  Position
+                  Position <span className="text-app-red">*</span>
                 </label>
                 <input
                   id="position"
@@ -125,6 +124,7 @@ const AddEmployee = () => {
                   className="w-full p-2 border rounded-md dark:bg-app-gray-800 dark:border-app-gray-700"
                   value={position}
                   onChange={(e) => setPosition(e.target.value)}
+                  required
                 />
               </div>
 
