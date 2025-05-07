@@ -13,8 +13,8 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Make React available globally to prevent duplicate React instances
-window.React = React;
+// REMOVE THIS: This might be causing the issue by making React available globally
+// window.React = React;
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element not found");

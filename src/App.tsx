@@ -31,7 +31,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const App: React.FC = () => {
+// Make sure we're using the same React instance consistently
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AppProvider>
