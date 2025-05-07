@@ -69,7 +69,7 @@ interface AppContextType {
 }
 
 // Create the context
-const AppContext = createContext<AppContextType | undefined>(undefined);
+const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
 // Initial empty state
 const initialState = {
@@ -90,20 +90,20 @@ const initialState = {
 // Provider component
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Theme state
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = React.useState<'light' | 'dark'>('light');
   
   // Data states
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [logs, setLogs] = useState<WorkLog[]>([]);
-  const [advances, setAdvances] = useState<Advance[]>([]);
-  const [attendance, setAttendance] = useState<Attendance[]>([]);
-  const [deductions, setDeductions] = useState<SalaryDeduction[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(initialState.companyInfo);
+  const [employees, setEmployees] = React.useState<Employee[]>([]);
+  const [tasks, setTasks] = React.useState<Task[]>([]);
+  const [logs, setLogs] = React.useState<WorkLog[]>([]);
+  const [advances, setAdvances] = React.useState<Advance[]>([]);
+  const [attendance, setAttendance] = React.useState<Attendance[]>([]);
+  const [deductions, setDeductions] = React.useState<SalaryDeduction[]>([]);
+  const [departments, setDepartments] = React.useState<Department[]>([]);
+  const [companyInfo, setCompanyInfo] = React.useState<CompanyInfo>(initialState.companyInfo);
 
   // Load data from localStorage on initial load
-  useEffect(() => {
+  React.useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
     if (savedTheme) setTheme(savedTheme);
     else {
@@ -158,7 +158,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
   
   // Apply theme class to document
-  useEffect(() => {
+  React.useEffect(() => {
     localStorage.setItem('theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -579,7 +579,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
 // Custom hook to use the context
 export const useApp = () => {
-  const context = useContext(AppContext);
+  const context = React.useContext(AppContext);
   if (context === undefined) {
     throw new Error('useApp must be used within an AppProvider');
   }

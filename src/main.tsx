@@ -13,9 +13,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// REMOVE THIS: This might be causing the issue by making React available globally
-// window.React = React;
-
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element not found");
 
