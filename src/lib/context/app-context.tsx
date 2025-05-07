@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -63,6 +64,9 @@ interface AppContextType {
   exportData: () => string;
   importData: (jsonData: string) => void;
   resetData: () => void;
+  
+  // Company information update
+  updateCompanyInfo: (info: Partial<CompanyInfo>) => void;
 }
 
 // Create the context
