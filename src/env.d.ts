@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY: string;
   readonly VITE_APP_NAME: string;
   readonly VITE_APP_ENV: string;
+  readonly VITE_DATABASE_URL: string; // Added DATABASE_URL to be accessible in browser
 }
 
 interface ImportMeta {

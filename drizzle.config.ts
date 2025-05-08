@@ -9,7 +9,7 @@ export default {
   dbCredentials: {
     connectionString: process.env.VITE_DATABASE_URL || '',
   },
-  // Ensure this runs only in Node.js environments
+  // For use with CLI tools only, not during browser build
   verbose: true,
   strict: true,
 } satisfies Config;
