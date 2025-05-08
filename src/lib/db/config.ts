@@ -1,6 +1,4 @@
 
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase client
@@ -9,10 +7,18 @@ export const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Postgres connection
-const connectionString = import.meta.env.VITE_DATABASE_URL || '';
+// For server-side use only - not directly imported in components
+// This will be used only by server actions, not client-side code
+let db: any = null;
 
-// Database connection for Drizzle
-const client = postgres(connectionString);
+// Only initialize Drizzle on the server side
+if (typeof window === 'undefined') {
+  const { drizzle } = require('drizzle-orm/postgres-js');
+  const postgres = require('postgres');
+  
+  const connectionString = process.env.DATABASE_URL || '';
+  const client = postgres(connectionString);
+  db = drizzle(client);
+}
 
-export const db = drizzle(client);
+export { db };

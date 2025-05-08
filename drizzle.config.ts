@@ -7,6 +7,9 @@ export default {
   out: './drizzle',
   driver: 'pg',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL || '',
+    connectionString: process.env.VITE_DATABASE_URL || '',
   },
+  // Ensure this runs only in Node.js environments
+  verbose: true,
+  strict: true,
 } satisfies Config;
