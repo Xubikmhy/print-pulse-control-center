@@ -7,9 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Edit, Plus, Trash2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
+import { useData } from '@/lib/context/data-provider';
 
 const Employees = () => {
-  const { employees, deleteEmployee, departments } = useApp();
+  const { employees, departments } = useApp();
+  const { deleteEmployee } = useData();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [filter, setFilter] = React.useState('all'); // 'all' | 'active' | 'inactive'
@@ -31,13 +44,11 @@ const Employees = () => {
   }, [departments, employees]);
   
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to deactivate ${name}?`)) {
-      deleteEmployee(id);
-      toast({
-        title: "Employee Deactivated",
-        description: `${name} has been deactivated.`,
-      });
-    }
+    deleteEmployee(id);
+    toast({
+      title: "Employee Deleted",
+      description: `${name} has been deleted.`,
+    });
   };
   
   return (
@@ -121,14 +132,34 @@ const Employees = () => {
                     <Button variant="ghost" size="icon" onClick={() => navigate(`/employees/edit/${employee.id}`)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => handleDelete(employee.id, employee.name)}
-                      className="text-app-red hover:bg-red-100 dark:hover:bg-red-900"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-app-red hover:bg-red-100 dark:hover:bg-red-900"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Employee</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete {employee.name}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            className="bg-red-600 hover:bg-red-700"
+                            onClick={() => handleDelete(employee.id, employee.name)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
                 

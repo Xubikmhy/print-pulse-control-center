@@ -7,9 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CheckSquare, Edit, ListPlus, Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
+import { useData } from '@/lib/context/data-provider';
 
 const Tasks = () => {
-  const { tasks, employees, updateTask, deleteTask } = useApp();
+  const { tasks, employees } = useApp();
+  const { updateTask, deleteTask } = useData();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -31,13 +44,11 @@ const Tasks = () => {
   };
   
   const handleDeleteTask = (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      deleteTask(id);
-      toast({
-        title: "Task Deleted",
-        description: `Task "${title}" has been deleted.`,
-      });
-    }
+    deleteTask(id);
+    toast({
+      title: "Task Deleted",
+      description: `Task "${title}" has been deleted.`,
+    });
   };
   
   const activeEmployees = employees.filter(employee => employee.isActive);
@@ -138,14 +149,34 @@ const Tasks = () => {
                       <Button variant="ghost" size="icon" onClick={() => navigate(`/tasks/edit/${task.id}`)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => handleDeleteTask(task.id, task.title)}
-                        className="text-app-red hover:bg-red-100 dark:hover:bg-red-900"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-app-red hover:bg-red-100 dark:hover:bg-red-900"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{task.title}"? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              className="bg-red-600 hover:bg-red-700"
+                              onClick={() => handleDeleteTask(task.id, task.title)}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                   

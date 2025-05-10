@@ -8,10 +8,12 @@ import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { DepartmentForm } from '@/components/departments/DepartmentForm';
+import { useData } from '@/lib/context/data-provider';
 
 const Departments = () => {
   const { departments, employees } = useApp();
   const { toast } = useToast();
+  const { deleteDepartment } = useData();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
@@ -23,6 +25,22 @@ const Departments = () => {
   
   const getDepartmentUsageCount = (departmentName: string) => {
     return employees.filter(employee => employee.department === departmentName).length;
+  };
+
+  const handleDeleteDepartment = (departmentId: string, departmentName: string) => {
+    try {
+      deleteDepartment(departmentId);
+      toast({
+        title: "Department Deleted",
+        description: `${departmentName} has been deleted.`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
   };
   
   return (
@@ -92,22 +110,7 @@ const Departments = () => {
                             {usageCount === 0 && (
                               <AlertDialogAction 
                                 className="bg-red-600 hover:bg-red-700"
-                                onClick={() => {
-                                  try {
-                                    const { deleteDepartment } = useApp();
-                                    deleteDepartment(department.id);
-                                    toast({
-                                      title: "Department Deleted",
-                                      description: `${department.name} has been deleted.`,
-                                    });
-                                  } catch (error) {
-                                    toast({
-                                      variant: "destructive",
-                                      title: "Error",
-                                      description: error instanceof Error ? error.message : "An unknown error occurred",
-                                    });
-                                  }
-                                }}
+                                onClick={() => handleDeleteDepartment(department.id, department.name)}
                               >
                                 Delete
                               </AlertDialogAction>
