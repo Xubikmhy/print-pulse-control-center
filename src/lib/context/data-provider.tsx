@@ -30,6 +30,12 @@ interface DataContextType {
   companyInfo: ReturnType<typeof useCompanyInfo>;
   // Loading state
   isLoading: boolean;
+
+  // Adding the missing methods to fix TypeScript errors
+  deleteDepartment: (id: string) => void;
+  deleteEmployee: (id: string) => void;
+  updateTask: (id: string, data: Partial<any>) => void;
+  deleteTask: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -64,7 +70,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     advances,
     salaryDeductions,
     companyInfo,
-    isLoading
+    isLoading,
+    // Add the missing methods
+    deleteDepartment: departments.deleteDepartment,
+    deleteEmployee: employees.deleteEmployee,
+    updateTask: tasks.updateTask,
+    deleteTask: tasks.deleteTask
   };
   
   return (
