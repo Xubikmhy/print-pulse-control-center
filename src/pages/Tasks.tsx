@@ -36,7 +36,7 @@ const Tasks = () => {
   });
   
   const handleMarkAsCompleted = (id: string, title: string) => {
-    updateTask(id, { status: 'Completed' });
+    updateTask({ id, data: { status: 'Completed' } });
     toast({
       title: "Task Completed",
       description: `Task "${title}" marked as completed.`,

@@ -10,6 +10,7 @@ import {
   useSalaryDeductions,
   useCompanyInfo
 } from '@/hooks/use-database';
+import { Task } from '@/lib/types';
 
 interface DataContextType {
   // Departments
@@ -31,10 +32,10 @@ interface DataContextType {
   // Loading state
   isLoading: boolean;
 
-  // Adding the missing methods to fix TypeScript errors
+  // Adding the correctly typed methods to fix TypeScript errors
   deleteDepartment: (id: string) => void;
   deleteEmployee: (id: string) => void;
-  updateTask: (id: string, data: Partial<any>) => void;
+  updateTask: (variables: { id: string, data: Partial<Task> }) => void;
   deleteTask: (id: string) => void;
 }
 
