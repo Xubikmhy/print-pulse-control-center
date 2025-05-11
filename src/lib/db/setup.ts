@@ -1,24 +1,26 @@
 
-import { supabase } from './config';
+import { supabase } from '../db/config';
 import { departments, employees, tasks, workLogs, advances, attendance, salaryDeductions, companyInfo } from './schema';
 
 /**
  * Check if a table exists in the Supabase database
  */
 export const tableExists = async (tableName: string): Promise<boolean> => {
-  const { data, error } = await supabase
-    .from('information_schema.tables')
-    .select('table_name')
-    .eq('table_schema', 'public')
-    .eq('table_name', tableName)
-    .single();
+  // Using a raw SQL query instead of direct table access for schema queries
+  const { data, error } = await supabase.rpc('exec', {
+    query: `SELECT EXISTS (
+      SELECT 1 FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name = '${tableName}'
+    )`
+  });
   
   if (error) {
     console.error(`Error checking if table ${tableName} exists:`, error);
     return false;
   }
   
-  return !!data;
+  return data ? !!data[0]?.exists : false;
 };
 
 /**
