@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { 
   useDepartments,
   useEmployees,
@@ -11,6 +11,8 @@ import {
   useCompanyInfo
 } from '@/hooks/use-database';
 import { Task } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
+import { setupTables, insertSampleData } from '@/lib/db/setup';
 
 interface DataContextType {
   // Departments
@@ -31,6 +33,8 @@ interface DataContextType {
   companyInfo: ReturnType<typeof useCompanyInfo>;
   // Loading state
   isLoading: boolean;
+  // Database initialization
+  initializeDatabase: () => Promise<void>;
 
   // Adding the correctly typed methods to fix TypeScript errors
   deleteDepartment: (id: string) => void;
@@ -50,6 +54,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const advances = useAdvances();
   const salaryDeductions = useSalaryDeductions();
   const companyInfo = useCompanyInfo();
+  const { toast } = useToast();
   
   // Combined loading state
   const isLoading = 
@@ -62,6 +67,57 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     salaryDeductions.isLoading || 
     companyInfo.isLoading;
   
+  // Initialize database
+  const initializeDatabase = async () => {
+    try {
+      // Set up database tables
+      const tablesResult = await setupTables();
+      
+      if (tablesResult.some(result => !result.success)) {
+        throw new Error("Failed to set up database tables");
+      }
+      
+      // Check if we need to insert sample data
+      const { data: deptCount } = await supabase
+        .from('departments')
+        .select('*', { count: 'exact', head: true });
+      
+      if (!deptCount || deptCount.length === 0) {
+        // Insert sample data if database is empty
+        const sampleResult = await insertSampleData();
+        
+        if (!sampleResult.success) {
+          throw new Error("Failed to insert sample data");
+        }
+      }
+      
+      // Invalidate queries to fetch fresh data
+      departments.departments.refetch();
+      employees.employees.refetch();
+      tasks.tasks.refetch();
+      
+      toast({
+        title: "Database initialized",
+        description: "Database tables and sample data have been set up successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error initializing database:', error);
+      toast({
+        title: "Database initialization failed",
+        description: error.message || "An error occurred while setting up the database.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Initialize database on first load
+  useEffect(() => {
+    // We'll let users initialize manually from the settings page
+  }, []);
+
+  // Import missing from previous providers
+  const { supabase } = require('../db/config');
+
   const value = {
     departments,
     employees,
@@ -72,6 +128,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     salaryDeductions,
     companyInfo,
     isLoading,
+    initializeDatabase,
     // Add the missing methods
     deleteDepartment: departments.deleteDepartment,
     deleteEmployee: employees.deleteEmployee,
