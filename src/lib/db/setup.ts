@@ -12,7 +12,7 @@ export const tableExists = async (tableName: string): Promise<boolean> => {
       SELECT 1 FROM information_schema.tables 
       WHERE table_schema = 'public' 
       AND table_name = '${tableName}'
-    )`
+    ) as exists`
   });
   
   if (error) {
@@ -20,7 +20,7 @@ export const tableExists = async (tableName: string): Promise<boolean> => {
     return false;
   }
   
-  return data ? !!data[0]?.exists : false;
+  return data && Array.isArray(data) && data.length > 0 ? !!data[0].exists : false;
 };
 
 /**
@@ -188,89 +188,112 @@ export const setupTables = async () => {
 export const insertSampleData = async () => {
   try {
     // Clear existing data
-    await supabase.from('salary_deductions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('attendance').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('work_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('advances').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('tasks').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('employees').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('departments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('company_info').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM salary_deductions WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM attendance WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM work_logs WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM advances WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM tasks WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM employees WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM departments WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
+    await supabase.rpc('exec', { 
+      query: "DELETE FROM company_info WHERE id != '00000000-0000-0000-0000-000000000000'"
+    });
     
     // Insert departments
-    const { data: deptData, error: deptError } = await supabase.from('departments').insert([
-      { name: 'Printing', description: 'Handles all printing operations' },
-      { name: 'Design', description: 'Creates design layouts for printing' },
-      { name: 'Binding', description: 'Handles book binding and finishing' },
-      { name: 'Management', description: 'Administrative department' }
-    ]).select();
+    const { error: deptError } = await supabase.rpc('exec', {
+      query: `
+        INSERT INTO departments (name, description)
+        VALUES 
+          ('Printing', 'Handles all printing operations'),
+          ('Design', 'Creates design layouts for printing'),
+          ('Binding', 'Handles book binding and finishing'),
+          ('Management', 'Administrative department')
+        RETURNING *;
+      `
+    });
     
     if (deptError) throw deptError;
     
     // Insert employees
-    const { data: empData, error: empError } = await supabase.from('employees').insert([
-      { 
-        name: 'John Doe', 
-        department: 'Printing', 
-        position: 'Senior Printer',
-        phone: '555-1234',
-        email: 'john@example.com',
-        joining_date: new Date('2022-01-15').toISOString(),
-        employment_type: 'Full-time',
-        salary_type: 'Monthly',
-        salary_rate: 3500,
-        is_active: true
-      },
-      { 
-        name: 'Jane Smith', 
-        department: 'Design', 
-        position: 'Graphic Designer',
-        phone: '555-5678',
-        email: 'jane@example.com',
-        joining_date: new Date('2022-03-10').toISOString(),
-        employment_type: 'Full-time',
-        salary_type: 'Monthly',
-        salary_rate: 4000,
-        is_active: true
-      }
-    ]).select();
+    const { error: empError } = await supabase.rpc('exec', {
+      query: `
+        INSERT INTO employees (
+          name, department, position, phone, email, joining_date, 
+          employment_type, salary_type, salary_rate, is_active
+        )
+        VALUES 
+          (
+            'John Doe', 'Printing', 'Senior Printer', '555-1234', 
+            'john@example.com', '2022-01-15', 'Full-time', 
+            'Monthly', 3500, true
+          ),
+          (
+            'Jane Smith', 'Design', 'Graphic Designer', '555-5678', 
+            'jane@example.com', '2022-03-10', 'Full-time', 
+            'Monthly', 4000, true
+          )
+        RETURNING id;
+      `
+    });
     
     if (empError) throw empError;
     
-    // Insert tasks
-    if (empData && empData.length > 0) {
-      const { error: taskError } = await supabase.from('tasks').insert([
-        {
-          employee_id: empData[0].id,
-          title: 'Complete spring catalog printing',
-          description: 'Print 500 copies of the spring catalog',
-          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          assigned_date: new Date().toISOString(),
-          priority: 'High',
-          status: 'In Progress'
-        },
-        {
-          employee_id: empData[1].id,
-          title: 'Design summer brochure',
-          description: 'Create layout for summer products brochure',
-          due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          assigned_date: new Date().toISOString(),
-          priority: 'Medium',
-          status: 'Pending'
-        }
-      ]);
+    // For tasks, we'll need to get the employee IDs first
+    const { data: employees, error: getEmpError } = await supabase
+      .from('employees')
+      .select('id, name')
+      .limit(2);
+    
+    if (getEmpError) throw getEmpError;
+    
+    if (employees && employees.length > 0) {
+      // Insert tasks for the first employee
+      const { error: taskError } = await supabase.rpc('exec', {
+        query: `
+          INSERT INTO tasks (
+            employee_id, title, description, due_date, assigned_date, 
+            priority, status
+          )
+          VALUES 
+            (
+              '${employees[0].id}', 'Complete spring catalog printing', 
+              'Print 500 copies of the spring catalog', 
+              NOW() + INTERVAL '7 days', NOW(),
+              'High', 'In Progress'
+            ),
+            (
+              '${employees[1].id}', 'Design summer brochure', 
+              'Create layout for summer products brochure', 
+              NOW() + INTERVAL '14 days', NOW(),
+              'Medium', 'Pending'
+            );
+        `
+      });
       
       if (taskError) throw taskError;
     }
     
     // Insert company info
-    const { error: companyError } = await supabase.from('company_info').insert([
-      {
-        name: 'PrintPulse Inc.',
-        address: '123 Printing Avenue, Inktown, IN 12345',
-        logo: null
-      }
-    ]);
+    const { error: companyError } = await supabase.rpc('exec', {
+      query: `
+        INSERT INTO company_info (name, address)
+        VALUES ('PrintPulse Inc.', '123 Printing Avenue, Inktown, IN 12345');
+      `
+    });
     
     if (companyError) throw companyError;
     
