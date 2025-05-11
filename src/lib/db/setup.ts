@@ -20,7 +20,11 @@ export const tableExists = async (tableName: string): Promise<boolean> => {
       return false;
     }
     
-    return data && Array.isArray(data) && data.length > 0 ? !!data[0].exists : false;
+    // Check if data is an array, has at least one item, and the first item has an 'exists' property
+    if (data && Array.isArray(data) && data.length > 0) {
+      return !!data[0].exists;
+    }
+    return false;
   } catch (error) {
     console.error(`Error in tableExists for ${tableName}:`, error);
     return false;
