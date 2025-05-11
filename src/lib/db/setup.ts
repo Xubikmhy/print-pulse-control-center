@@ -6,21 +6,25 @@ import { departments, employees, tasks, workLogs, advances, attendance, salaryDe
  * Check if a table exists in the Supabase database
  */
 export const tableExists = async (tableName: string): Promise<boolean> => {
-  // Using a raw SQL query instead of direct table access for schema queries
-  const { data, error } = await supabase.rpc('exec', {
-    query: `SELECT EXISTS (
-      SELECT 1 FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name = '${tableName}'
-    ) as exists`
-  });
-  
-  if (error) {
-    console.error(`Error checking if table ${tableName} exists:`, error);
+  try {
+    const { data, error } = await supabase.rpc('exec', {
+      query: `SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = '${tableName}'
+      ) as exists`
+    });
+    
+    if (error) {
+      console.error(`Error checking if table ${tableName} exists:`, error);
+      return false;
+    }
+    
+    return data && Array.isArray(data) && data.length > 0 ? !!data[0].exists : false;
+  } catch (error) {
+    console.error(`Error in tableExists for ${tableName}:`, error);
     return false;
   }
-  
-  return data && Array.isArray(data) && data.length > 0 ? !!data[0].exists : false;
 };
 
 /**
@@ -253,15 +257,14 @@ export const insertSampleData = async () => {
     if (empError) throw empError;
     
     // For tasks, we'll need to get the employee IDs first
-    const { data: employees, error: getEmpError } = await supabase
-      .from('employees')
-      .select('id, name')
-      .limit(2);
+    const { data: empData, error: getEmpError } = await supabase.rpc('exec', {
+      query: `SELECT id, name FROM employees LIMIT 2;`
+    });
     
     if (getEmpError) throw getEmpError;
     
-    if (employees && employees.length > 0) {
-      // Insert tasks for the first employee
+    if (empData && Array.isArray(empData) && empData.length > 0) {
+      // Insert tasks for the employees
       const { error: taskError } = await supabase.rpc('exec', {
         query: `
           INSERT INTO tasks (
@@ -270,13 +273,13 @@ export const insertSampleData = async () => {
           )
           VALUES 
             (
-              '${employees[0].id}', 'Complete spring catalog printing', 
+              '${empData[0].id}', 'Complete spring catalog printing', 
               'Print 500 copies of the spring catalog', 
               NOW() + INTERVAL '7 days', NOW(),
               'High', 'In Progress'
             ),
             (
-              '${employees[1].id}', 'Design summer brochure', 
+              '${empData[1].id}', 'Design summer brochure', 
               'Create layout for summer products brochure', 
               NOW() + INTERVAL '14 days', NOW(),
               'Medium', 'Pending'
@@ -310,23 +313,27 @@ export const insertSampleData = async () => {
 export const runTestQuery = async () => {
   try {
     // Test query for departments
-    const { data: departments, error: deptError } = await supabase
-      .from('departments')
-      .select('*');
+    const { data: deptData, error: deptError } = await supabase.rpc('exec', {
+      query: `SELECT * FROM departments;`
+    });
     
     if (deptError) throw deptError;
     
     // Test query for employees with department join
-    const { data: employees, error: empError } = await supabase
-      .from('employees')
-      .select('*, tasks(*)');
+    const { data: empData, error: empError } = await supabase.rpc('exec', {
+      query: `
+        SELECT e.*, 
+        (SELECT json_agg(t) FROM tasks t WHERE t.employee_id = e.id) as tasks 
+        FROM employees e;
+      `
+    });
     
     if (empError) throw empError;
     
     return { 
       success: true, 
-      departments: departments || [], 
-      employees: employees || [],
+      departments: deptData || [], 
+      employees: empData || [],
       message: 'Test query executed successfully' 
     };
   } catch (error: any) {
