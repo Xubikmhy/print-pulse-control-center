@@ -13,7 +13,7 @@ export const tableExists = async (tableName: string): Promise<boolean> => {
         WHERE table_schema = 'public' 
         AND table_name = '${tableName}'
       ) as exists`
-    } as { query: string });
+    } as any); // Use 'as any' to overcome the type constraint
     
     if (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
@@ -21,7 +21,7 @@ export const tableExists = async (tableName: string): Promise<boolean> => {
     }
     
     // Check if data is an array, has at least one item, and the first item has an 'exists' property
-    if (data && Array.isArray(data) && data.length > 0) {
+    if (data && Array.isArray(data) && data.length > 0 && 'exists' in data[0]) {
       return !!data[0].exists;
     }
     return false;
@@ -167,7 +167,7 @@ export const setupTables = async () => {
       if (!exists) {
         const { error } = await supabase.rpc('exec', { 
           query: tableDefinitions[tableName as keyof typeof tableDefinitions] 
-        } as { query: string });
+        } as any); // Use 'as any' to overcome the type constraint
         
         results.push({
           table: tableName,
@@ -198,28 +198,28 @@ export const insertSampleData = async () => {
     // Clear existing data
     await supabase.rpc('exec', { 
       query: "DELETE FROM salary_deductions WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     await supabase.rpc('exec', { 
       query: "DELETE FROM attendance WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     await supabase.rpc('exec', { 
       query: "DELETE FROM work_logs WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     await supabase.rpc('exec', { 
       query: "DELETE FROM advances WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     await supabase.rpc('exec', { 
       query: "DELETE FROM tasks WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     await supabase.rpc('exec', { 
       query: "DELETE FROM employees WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     await supabase.rpc('exec', { 
       query: "DELETE FROM departments WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     await supabase.rpc('exec', { 
       query: "DELETE FROM company_info WHERE id != '00000000-0000-0000-0000-000000000000'"
-    } as { query: string });
+    } as any);
     
     // Insert departments
     const { error: deptError } = await supabase.rpc('exec', {
@@ -232,7 +232,7 @@ export const insertSampleData = async () => {
           ('Management', 'Administrative department')
         RETURNING *;
       `
-    } as { query: string });
+    } as any); // Use 'as any' to overcome the type constraint
     
     if (deptError) throw deptError;
     
@@ -256,19 +256,20 @@ export const insertSampleData = async () => {
           )
         RETURNING id;
       `
-    } as { query: string });
+    } as any);
     
     if (empError) throw empError;
     
     // For tasks, we'll need to get the employee IDs first
     const { data: empData, error: getEmpError } = await supabase.rpc('exec', {
       query: `SELECT id, name FROM employees LIMIT 2;`
-    } as { query: string });
+    } as any);
     
     if (getEmpError) throw getEmpError;
     
+    // Check if empData is valid before proceeding
     if (empData && Array.isArray(empData) && empData.length > 0) {
-      // Insert tasks for the employees
+      // Insert tasks for the employees, safely access the id property
       const { error: taskError } = await supabase.rpc('exec', {
         query: `
           INSERT INTO tasks (
@@ -277,19 +278,19 @@ export const insertSampleData = async () => {
           )
           VALUES 
             (
-              '${empData[0].id}', 'Complete spring catalog printing', 
+              '${empData[0]?.id || ''}', 'Complete spring catalog printing', 
               'Print 500 copies of the spring catalog', 
               NOW() + INTERVAL '7 days', NOW(),
               'High', 'In Progress'
             ),
             (
-              '${empData[1].id}', 'Design summer brochure', 
+              '${empData[1]?.id || ''}', 'Design summer brochure', 
               'Create layout for summer products brochure', 
               NOW() + INTERVAL '14 days', NOW(),
               'Medium', 'Pending'
             );
         `
-      } as { query: string });
+      } as any);
       
       if (taskError) throw taskError;
     }
@@ -300,7 +301,7 @@ export const insertSampleData = async () => {
         INSERT INTO company_info (name, address)
         VALUES ('PrintPulse Inc.', '123 Printing Avenue, Inktown, IN 12345');
       `
-    } as { query: string });
+    } as any);
     
     if (companyError) throw companyError;
     
@@ -319,7 +320,7 @@ export const runTestQuery = async () => {
     // Test query for departments
     const { data: deptData, error: deptError } = await supabase.rpc('exec', {
       query: `SELECT * FROM departments;`
-    } as { query: string });
+    } as any);
     
     if (deptError) throw deptError;
     
@@ -330,7 +331,7 @@ export const runTestQuery = async () => {
         (SELECT json_agg(t) FROM tasks t WHERE t.employee_id = e.id) as tasks 
         FROM employees e;
       `
-    } as { query: string });
+    } as any);
     
     if (empError) throw empError;
     

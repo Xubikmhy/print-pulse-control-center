@@ -24,7 +24,7 @@ export const applyMigrations = async () => {
         END
         $$;
       `
-    } as { query: string });
+    } as any); // Use 'as any' to overcome the type constraint
     
     if (migration1Error) {
       console.error('Migration 1 failed:', migration1Error);
@@ -46,7 +46,7 @@ export const checkSupabaseFeatures = async () => {
     // Try to execute a simple RPC function to check if functions are enabled
     const { data, error } = await supabase.rpc('exec', { 
       query: 'SELECT 1 as test;' 
-    } as { query: string });
+    } as any); // Use 'as any' to overcome the type constraint
     
     if (error) {
       // If this fails, it might mean that database functions are not enabled
