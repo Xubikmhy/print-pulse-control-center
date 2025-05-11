@@ -19,6 +19,7 @@ import Finances from "./pages/Finances";
 import SalaryReports from "./pages/SalaryReports";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import DatabaseSetup from "./pages/DatabaseSetup";
 
 // Configure for offline mode but allow for remote data when available
 const queryClient = new QueryClient({
@@ -53,6 +54,7 @@ const App: React.FC = () => {
                 <Route path="/salary-reports" element={<Layout><SalaryReports /></Layout>} />
                 <Route path="/salary" element={<Navigate to="/salary-reports" replace />} />
                 <Route path="/settings" element={<Layout><Settings /></Layout>} />
+                <Route path="/database-setup" element={<Layout><DatabaseSetup /></Layout>} />
                 {/* Catch all route - must be last */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
