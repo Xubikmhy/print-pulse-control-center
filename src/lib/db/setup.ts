@@ -13,7 +13,7 @@ export const tableExists = async (tableName: string): Promise<boolean> => {
         WHERE table_schema = 'public' 
         AND table_name = '${tableName}'
       ) as exists`
-    });
+    } as { query: string });
     
     if (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
@@ -163,7 +163,7 @@ export const setupTables = async () => {
       if (!exists) {
         const { error } = await supabase.rpc('exec', { 
           query: tableDefinitions[tableName as keyof typeof tableDefinitions] 
-        });
+        } as { query: string });
         
         results.push({
           table: tableName,
@@ -194,28 +194,28 @@ export const insertSampleData = async () => {
     // Clear existing data
     await supabase.rpc('exec', { 
       query: "DELETE FROM salary_deductions WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     await supabase.rpc('exec', { 
       query: "DELETE FROM attendance WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     await supabase.rpc('exec', { 
       query: "DELETE FROM work_logs WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     await supabase.rpc('exec', { 
       query: "DELETE FROM advances WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     await supabase.rpc('exec', { 
       query: "DELETE FROM tasks WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     await supabase.rpc('exec', { 
       query: "DELETE FROM employees WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     await supabase.rpc('exec', { 
       query: "DELETE FROM departments WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     await supabase.rpc('exec', { 
       query: "DELETE FROM company_info WHERE id != '00000000-0000-0000-0000-000000000000'"
-    });
+    } as { query: string });
     
     // Insert departments
     const { error: deptError } = await supabase.rpc('exec', {
@@ -228,7 +228,7 @@ export const insertSampleData = async () => {
           ('Management', 'Administrative department')
         RETURNING *;
       `
-    });
+    } as { query: string });
     
     if (deptError) throw deptError;
     
@@ -252,14 +252,14 @@ export const insertSampleData = async () => {
           )
         RETURNING id;
       `
-    });
+    } as { query: string });
     
     if (empError) throw empError;
     
     // For tasks, we'll need to get the employee IDs first
     const { data: empData, error: getEmpError } = await supabase.rpc('exec', {
       query: `SELECT id, name FROM employees LIMIT 2;`
-    });
+    } as { query: string });
     
     if (getEmpError) throw getEmpError;
     
@@ -285,7 +285,7 @@ export const insertSampleData = async () => {
               'Medium', 'Pending'
             );
         `
-      });
+      } as { query: string });
       
       if (taskError) throw taskError;
     }
@@ -296,7 +296,7 @@ export const insertSampleData = async () => {
         INSERT INTO company_info (name, address)
         VALUES ('PrintPulse Inc.', '123 Printing Avenue, Inktown, IN 12345');
       `
-    });
+    } as { query: string });
     
     if (companyError) throw companyError;
     
@@ -315,7 +315,7 @@ export const runTestQuery = async () => {
     // Test query for departments
     const { data: deptData, error: deptError } = await supabase.rpc('exec', {
       query: `SELECT * FROM departments;`
-    });
+    } as { query: string });
     
     if (deptError) throw deptError;
     
@@ -326,7 +326,7 @@ export const runTestQuery = async () => {
         (SELECT json_agg(t) FROM tasks t WHERE t.employee_id = e.id) as tasks 
         FROM employees e;
       `
-    });
+    } as { query: string });
     
     if (empError) throw empError;
     
